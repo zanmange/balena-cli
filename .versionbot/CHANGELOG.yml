@@ -1,4 +1,16 @@
 - commits:
+    - subject: '[DO NOT MERGE] test CI'
+      hash: 483cdb4efedab5e90300574d47d40cba2bd721f5
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Giovanni Garufi <giovanni@balena.io>
+        signed-off-by: Giovanni Garufi <giovanni@balena.io>
+      author: Giovanni Garufi
+  version: 11.6.1
+  date: 2019-07-12T10:27:34.643Z
+- commits:
     - subject: Add os.sshKeys to generateBaseConfig
       hash: 9eae9dcee348d270a35da415151e286c0bb38bf1
       body: ''
