@@ -1,4 +1,23 @@
 - commits:
+    - subject: Drop resin-release in favor of balena-release v2.1.0
+      hash: 88255e622c0134c363b2e92c811ea5e702ce332a
+      body: |
+        This makes the cli compatible with Pinejs ^10.19.0
+      footer:
+        Resolves: '#1347'
+        resolves: '#1347'
+        See: >-
+          https://github.com/balena-io/pinejs/blob/master/CHANGELOG.md#10190---2019-07-05
+        see: >-
+          https://github.com/balena-io/pinejs/blob/master/CHANGELOG.md#10190---2019-07-05
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Thodoris Greasidis <thodoris@balena.io>
+        signed-off-by: Thodoris Greasidis <thodoris@balena.io>
+      author: Thodoris Greasidis
+  version: 11.7.0
+  date: 2019-07-12T20:17:07.926Z
+- commits:
     - subject: Add os.sshKeys to generateBaseConfig
       hash: 9eae9dcee348d270a35da415151e286c0bb38bf1
       body: ''
