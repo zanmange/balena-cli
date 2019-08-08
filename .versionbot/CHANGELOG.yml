@@ -1,4 +1,16 @@
 - commits:
+    - subject: Add homebrew installation method for macOS
+      hash: 7965149fe2e7041902d7da7f7d3d71f775ad5f64
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Chris Crocker-White <chriscw@balena.io>
+        signed-off-by: Chris Crocker-White <chriscw@balena.io>
+      author: Chris Crocker-White
+  version: 11.7.9
+  date: 2019-08-08T16:58:32.486Z
+- commits:
     - subject: Decaffeinate test files
       hash: ebd8f348caabd3aad41cab6517859f376b6c1304
       body: ''
