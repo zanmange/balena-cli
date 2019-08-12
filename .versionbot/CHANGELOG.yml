@@ -1,4 +1,16 @@
 - commits:
+    - subject: add `ssh-keys` command for managing public keys
+      hash: 00ae40c634e18d74f8d531624d70230415244f05
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Will Boyce <will@balena.io>
+        signed-off-by: Will Boyce <will@balena.io>
+      author: Will Boyce
+  version: 11.8.0
+  date: 2019-08-12T22:50:22.436Z
+- commits:
     - subject: Fix bug where "env rm" fails silently if an additional arg is present
       hash: f1d9c29786e1c72394f4a120eece17a20ab2eac7
       body: >
