@@ -1,4 +1,20 @@
 - commits:
+    - subject: >-
+        Introduce new treatment of .gitignore and .dockerignore files with the
+        -I flag
+      hash: 4648b37661556880510e1484bce91ef3986a37b1
+      body: ''
+      footer:
+        Connects-to: '#1032'
+        connects-to: '#1032'
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+  version: 11.9.0
+  date: 2019-08-16T16:14:42.798Z
+- commits:
     - subject: Fix incorrect arguments passed to oclif bootstrap function
       hash: 730c09989d401b2a14d1b6ceb8942161c330f52d
       body: |
