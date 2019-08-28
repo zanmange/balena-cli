@@ -1,4 +1,25 @@
 - commits:
+    - subject: Refactor app.ts (entrypoint) and oclif-specific files
+      hash: 349c2eaa1826fe25be54b78b8e07c9184e65ad49
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+    - subject: Add missing oclif-based commands to mixpanel tracking
+      hash: 52f3ace3aeb76b927035f1f19410831bfce2bf77
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+  version: 11.9.2
+  date: 2019-08-28T22:29:08.053Z
+- commits:
     - subject: 'logging: note that tarring is occurring'
       hash: e3435c66df8a55ea4538b0d9d5a1798ba65d084f
       body: |
