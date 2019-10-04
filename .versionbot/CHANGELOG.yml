@@ -1,4 +1,18 @@
 - commits:
+    - subject: >-
+        Patch balena-preload to avoid bind mount for Google Cloud Build
+        compatibility
+      hash: b727ec04e4fb9778fb70fc1596ceafc348b3d99c
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+  version: 11.15.0
+  date: 2019-10-04T02:43:44.989Z
+- commits:
     - subject: Allow deleting config vars with 'env rm'
       hash: d463a2f0e50213e6f97384e5184daffc10b156b6
       body: ''
