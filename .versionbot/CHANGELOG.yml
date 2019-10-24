@@ -1,4 +1,25 @@
 - commits:
+    - subject: Test CLI notarization
+      hash: 9a985f3c58e6b7cfcc3ea5eacf2232881cfc7587
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+    - subject: Increase unit test timeout (add tests/mocha.opts file)
+      hash: eabd74d02f78500fe858c5c651701949721e72bf
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+  version: 11.17.1
+  date: 2019-10-24T11:54:48.465Z
+- commits:
     - subject: Update livepush to support build arguments
       hash: 8ed4f547e0b9d8c969ac7eeec2a6c3fa8cbfbabf
       body: ''
