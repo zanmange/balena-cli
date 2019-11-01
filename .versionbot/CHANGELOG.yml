@@ -1,4 +1,14 @@
 - commits:
+    - subject: Update mixpanel to ^0.10.3
+      hash: 39ca80de29b22b07ba59b1ca8c900c8428baa6b5
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Scott Lowe
+  version: 11.17.2
+  date: 2019-11-01T08:43:35.120Z
+- commits:
     - subject: Fix potentialy undefined build task when livepushing
       hash: 55b2b5a467586467d8b8288b561a41d0f9ce8fb2
       body: ''
