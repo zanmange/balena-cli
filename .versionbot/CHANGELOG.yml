@@ -1,4 +1,17 @@
 - commits:
+    - subject: Update mixpanel to ^0.10.3
+      hash: 2bf41df0430ab78a1cfea5f2fbd51155a2ff3957
+      body: |
+        Required as part of long timeout issues fix (#1436).
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Scott Lowe <scott@balena.io>
+        signed-off-by: Scott Lowe <scott@balena.io>
+      author: Scott Lowe
+  version: 11.17.4
+  date: 2019-11-05T10:36:08.989Z
+- commits:
     - subject: Use all available on-device images during local push
       hash: 62b7d2fd1a80023fb9aff4dfc54a8faa72040459
       body: ''
