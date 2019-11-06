@@ -1,4 +1,18 @@
 - commits:
+    - subject: Stop listing discontinued device types in `devices supported`
+      hash: ca8d7d8dd966a3168219b97b19beab8090dcf294
+      body: ''
+      footer:
+        Resolves: '#1485'
+        resolves: '#1485'
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Thodoris Greasidis <thodoris@balena.io>
+        signed-off-by: Thodoris Greasidis <thodoris@balena.io>
+      author: Thodoris Greasidis
+  version: 11.17.5
+  date: 2019-11-06T13:11:18.951Z
+- commits:
     - subject: Support optional containers when pushing to local target
       hash: b31e253fa4c5d5a382a55f718091e58f8d022f59
       body: ''
