@@ -1,4 +1,67 @@
 - commits:
+    - subject: Get answers from config.json
+      hash: 831dd78e02935691d0092e6584705d20f4eb2be7
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+    - subject: >-
+        Migrate 'os configure' command to oclif + TypeScript, and fix '--config'
+        option
+      hash: 7d6783397b178a920e6cc8b2dd03db02dff65c38
+      body: |
+        Also adds more non-interactive configuration options:
+        --wifi-ssid, --wifi-key, --app-update-poll-interval
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+    - subject: Temporary debug settings
+      hash: d3a804efe58e0f0a831cbe9f8d60b6b9e2a726e6
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+    - subject: >-
+        Error handling: add ExpectedError type as alternative to
+        exitWithExpectedError()
+      hash: 6500675a987091eec814f877db664a5d9c6ac16f
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+    - subject: Fix logged-in check in "logs" and "ssh" commands (async/await usage)
+      hash: 1577d4ff539760059d3642ae22abf62b960f5aa7
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+    - subject: Enable debug-mode "long stack traces" for Bluebird promises (async code)
+      hash: 0d61db8c188e5499024ea595ab9661e0fcd27a5f
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+  version: 11.17.4
+  date: 2019-11-06T03:05:24.958Z
+- commits:
     - subject: Use all available on-device images during local push
       hash: 62b7d2fd1a80023fb9aff4dfc54a8faa72040459
       body: ''
