@@ -1,4 +1,18 @@
 - commits:
+    - subject: Add NYC code coverage report
+      hash: 7b3a8b4ecf83c8e3ea7fc65364a1bcc937595c20
+      body: >
+        After running tests, a code coverage report can be found at
+        ./coverage/lcov-report/index.html
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Lucian <lucian.buzzo@gmail.com>
+        signed-off-by: Lucian <lucian.buzzo@gmail.com>
+      author: Lucian
+  version: 11.18.3
+  date: 2019-11-19T11:55:08.943Z
+- commits:
     - subject: >-
         Use helpers version of `cleanOutput` in tests. Simplify expect semantics
         in tests.
