@@ -1,4 +1,18 @@
 - commits:
+    - subject: Add README note regarding Git for Windows console installation choice
+      hash: 6c3429eb0cb1f7caec4d992b71edc3e02873c113
+      body: ''
+      footer:
+        Resolves: '#598'
+        resolves: '#598'
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+  version: 11.18.3
+  date: 2019-11-20T23:42:36.466Z
+- commits:
     - subject: >-
         Use helpers version of `cleanOutput` in tests. Simplify expect semantics
         in tests.
