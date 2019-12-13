@@ -1,4 +1,16 @@
 - commits:
+    - subject: 'Enable "npm install git://github.com/balena-io/balena-cli"'
+      hash: 40669d1b1a0640cffaa94a463913d89412a00659
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Paulo Castro <paulo@balena.io>
+        signed-off-by: Paulo Castro <paulo@balena.io>
+      author: Paulo Castro
+  version: 11.20.2
+  date: 2019-12-13T14:28:31.253Z
+- commits:
     - subject: Fix issues with devices associated with inaccessible applications.
       hash: 33552724a1b594ccb81372ea50cea4e9e673dff4
       body: ''
