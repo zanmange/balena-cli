@@ -1,4 +1,16 @@
 - commits:
+    - subject: Testing preloader upgrade 2
+      hash: 3653434a4d11bdd5f4c4ec20dddcb5016fa664d2
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Theodor Gherzan <theodor@balena.io>
+        signed-off-by: Theodor Gherzan <theodor@balena.io>
+      author: Theodor Gherzan
+  version: 11.19.2
+  date: 2019-12-14T19:59:33.481Z
+- commits:
     - subject: >-
         Introduce workaround that fixes windows dns issue on `balena push` using
         .local device names. Improve error handling in deployToDevice so that
