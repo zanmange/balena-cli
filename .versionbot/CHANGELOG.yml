@@ -1,4 +1,33 @@
 - commits:
+    - subject: npm dedupe && npm install
+      hash: c116b6ab828642b0aa31e860ec5be9abbecec8df
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Update npm-shrinkwrap.json
+      hash: df8f7c212c42f333ea05e3ea2c4133b5a3d16f3e
+      body: |
+        Steps:
+        $ git checkout update-deps
+        $ git checkout master -- npm-shrinkwrap.json
+        $ rm -rf node_modules
+        $ npm install
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Update dependencies
+      hash: 06ff5ac66d15f32d8d09f0bb8fb274d47b4d33e6
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Pagan Gazzard
+  version: 11.29.0
+  date: 2020-03-05T21:24:23.120Z
+- commits:
     - subject: >-
         Don't ignore BALENARC_NO_PROXY env var if HTTP(S)_PROXY env vars are
         defined
