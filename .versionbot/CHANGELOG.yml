@@ -1,4 +1,43 @@
 - commits:
+    - subject: Avoid Sentry reporting of selected common "expected" errors
+      hash: eeb11080df3a8b7879ab96158a3e584d058832e4
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: >-
+        Fix occasional "CLI prints 'null' and exits" (replace old Raven/Sentry
+        SDK)
+      hash: ccd5dbd176dd354798b8a9e7f0a34ce997374113
+      body: ''
+      footer:
+        Resolves: '#1523'
+        resolves: '#1523'
+        Connects-to: '#1193'
+        connects-to: '#1193'
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Don't send the full command line to Sentry.io
+      hash: 0927b61a254a192d1ab31c495e27d03fbab06fec
+      body: ''
+      footer:
+        Resolves: '#703'
+        resolves: '#703'
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Fix occasionally missed command tracking request (oclif commands)
+      hash: 90625422ce52d747be3f6f3a1daa74d3c53d3fd0
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+  version: 11.28.14
+  date: 2020-03-10T19:29:13.480Z
+- commits:
     - subject: Improve the UX by only printing effective file changes in livepush
       hash: b83431c2e09cafaad40c8b04abb16f79bcb5acc1
       body: ''
