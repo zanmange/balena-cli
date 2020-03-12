@@ -1,4 +1,14 @@
 - commits:
+    - subject: Automatically lint files on commit
+      hash: 168d6b3d2f0a4b5ff0854503fc624bb2f4075d72
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 11.29.1
+  date: 2020-03-12T21:43:03.111Z
+- commits:
     - subject: Update dependencies
       hash: 3d2e109e7f5e05958349fd74533ba8d1841932a9
       body: |
