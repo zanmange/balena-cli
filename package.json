@@ -180,7 +180,7 @@
     "balena-image-manager": "^6.1.2",
     "balena-preload": "^8.4.0",
     "balena-release": "^2.1.0",
-    "balena-sdk": "^12.33.0",
+    "balena-sdk": "^13.3.6",
     "balena-semver": "^2.2.0",
     "balena-settings-client": "^4.0.5",
     "balena-sync": "^10.2.0",
