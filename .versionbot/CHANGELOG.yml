@@ -1,4 +1,16 @@
 - commits:
+    - subject: Add a sequential option for pushing to a device
+      hash: 14bf298e7db9cb3311aa1408368dff98b3bb969a
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Cameron Diver <cameron@balena.io>
+        signed-off-by: Cameron Diver <cameron@balena.io>
+      author: Cameron Diver
+  version: 11.36.0
+  date: 2020-05-21T11:13:07.872Z
+- commits:
     - subject: Update typescript to 3.9
       hash: 744122b1b8dc9884e57638bb7f86776598714a62
       body: ''
