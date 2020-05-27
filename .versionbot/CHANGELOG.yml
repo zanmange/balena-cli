@@ -1,4 +1,16 @@
 - commits:
+    - subject: Remove package `semver` in favour of `balena-semver`
+      hash: 429f188f5fe3a54fcc28b21d5469ef36e75eeae7
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Scott Lowe <scott@balena.io>
+        signed-off-by: Scott Lowe <scott@balena.io>
+      author: Scott Lowe
+  version: 11.35.10
+  date: 2020-05-27T13:11:16.960Z
+- commits:
     - subject: 'balena deploy: Fix "access denied" pushing images to registry'
       hash: ba0024645d5dc01c27bccdf8fc7b4a21d7dc79ee
       body: ''
