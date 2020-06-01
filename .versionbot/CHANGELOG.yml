@@ -1,4 +1,14 @@
 - commits:
+    - subject: 'balena deploy: Allow image layer caching when pushing to the registry'
+      hash: 7221ede3ec2b59dd214dfe1d7b764bfe4ed16aac
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Paulo Castro
+  version: 11.36.0
+  date: 2020-06-01T11:38:13.262Z
+- commits:
     - subject: 'v12 preparations: Add feature switch for project directory validation'
       hash: 2ab8ae1c1056b6d4bd77b74d44f778f854ec5955
       body: ''
