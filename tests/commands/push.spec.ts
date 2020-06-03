@@ -129,8 +129,12 @@ describe('balena push', function() {
 					'src',
 					'windows-crlf.sh',
 				)}`,
-				'[Warn] Windows-format line endings were detected in some files. Consider using the `--convert-eol` option.',
 			);
+			if (!isV12) {
+				expectedResponseLines.push(
+					'[Warn] Windows-format line endings were detected in some files. Consider using the `--convert-eol` option.',
+				);
+			}
 		}
 
 		await testPushBuildStream({
@@ -175,46 +179,53 @@ describe('balena push', function() {
 		});
 	});
 
-	it('should create the expected tar stream (single container, --convert-eol)', async () => {
-		const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');
-		const expectedFiles: ExpectedTarStreamFiles = {
-			'src/start.sh': { fileSize: 89, type: 'file' },
-			'src/windows-crlf.sh': {
-				fileSize: isWindows ? 68 : 70,
-				type: 'file',
-				testStream: isWindows ? expectStreamNoCRLF : undefined,
-			},
-			Dockerfile: { fileSize: 88, type: 'file' },
-			'Dockerfile-alt': { fileSize: 30, type: 'file' },
-		};
-		const regSecretsPath = await addRegSecretsEntries(expectedFiles);
-		const responseFilename = 'build-POST-v3.json';
-		const responseBody = await fs.readFile(
-			path.join(builderResponsePath, responseFilename),
-			'utf8',
-		);
-		const expectedResponseLines = [...commonResponseLines[responseFilename]];
-		if (isWindows) {
-			expectedResponseLines.push(
-				`[Info] Converting line endings CRLF -> LF for file: ${path.join(
-					projectPath,
-					'src',
-					'windows-crlf.sh',
-				)}`,
+	it(
+		isV12()
+			? 'should create the expected tar stream (single container)'
+			: 'should create the expected tar stream (single container, --convert-eol)',
+		async () => {
+			const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');
+			const expectedFiles: ExpectedTarStreamFiles = {
+				'src/start.sh': { fileSize: 89, type: 'file' },
+				'src/windows-crlf.sh': {
+					fileSize: isWindows ? 68 : 70,
+					type: 'file',
+					testStream: isWindows ? expectStreamNoCRLF : undefined,
+				},
+				Dockerfile: { fileSize: 88, type: 'file' },
+				'Dockerfile-alt': { fileSize: 30, type: 'file' },
+			};
+			const regSecretsPath = await addRegSecretsEntries(expectedFiles);
+			const responseFilename = 'build-POST-v3.json';
+			const responseBody = await fs.readFile(
+				path.join(builderResponsePath, responseFilename),
+				'utf8',
 			);
-		}
+			const expectedResponseLines = [...commonResponseLines[responseFilename]];
+			if (isWindows) {
+				expectedResponseLines.push(
+					`[Info] Converting line endings CRLF -> LF for file: ${path.join(
+						projectPath,
+						'src',
+						'windows-crlf.sh',
+					)}`,
+				);
+			}
 
-		await testPushBuildStream({
-			builderMock: builder,
-			commandLine: `push testApp -s ${projectPath} -R ${regSecretsPath} -l`,
-			expectedFiles,
-			expectedQueryParams: commonQueryParams,
-			expectedResponseLines,
-			projectPath,
-			responseBody,
-			responseCode: 200,
-		});
-	});
+			await testPushBuildStream({
+				builderMock: builder,
+				commandLine: isV12()
+					? `push testApp -s ${projectPath} -R ${regSecretsPath}`
+					: `push testApp -s ${projectPath} -R ${regSecretsPath} -l`,
+				expectedFiles,
+				expectedQueryParams: commonQueryParams,
+				expectedResponseLines,
+				projectPath,
+				responseBody,
+				responseCode: 200,
+			});
+		},
+	);
 
 	// Skip Windows because the old tarDirectory() implementation (still used when
 	// '--nogitignore' is not provided) uses the old `zeit/dockerignore` npm package
@@ -272,7 +283,9 @@ describe('balena push', function() {
 
 			await testPushBuildStream({
 				builderMock: builder,
-				commandLine: `push testApp -s ${projectPath} -R ${regSecretsPath} -l`,
+				commandLine: isV12()
+					? `push testApp -s ${projectPath} -R ${regSecretsPath}`
+					: `push testApp -s ${projectPath} -R ${regSecretsPath} -l`,
 				expectedFiles,
 				expectedQueryParams: commonQueryParams,
 				expectedResponseLines,
@@ -312,7 +325,9 @@ describe('balena push', function() {
 
 		await testPushBuildStream({
 			builderMock: builder,
-			commandLine: `push testApp -s ${projectPath} -R ${regSecretsPath} -l -G`,
+			commandLine: isV12()
+				? `push testApp -s ${projectPath} -R ${regSecretsPath} -G`
+				: `push testApp -s ${projectPath} -R ${regSecretsPath} -l -G`,
 			expectedFiles,
 			expectedQueryParams: commonQueryParams,
 			expectedResponseLines: commonResponseLines[responseFilename],
@@ -344,7 +359,9 @@ describe('balena push', function() {
 
 		await testPushBuildStream({
 			builderMock: builder,
-			commandLine: `push testApp -s ${projectPath} -R ${regSecretsPath} -l -G`,
+			commandLine: isV12()
+				? `push testApp -s ${projectPath} -R ${regSecretsPath} -G`
+				: `push testApp -s ${projectPath} -R ${regSecretsPath} -l -G`,
 			expectedFiles,
 			expectedQueryParams: commonQueryParams,
 			expectedResponseLines: commonResponseLines[responseFilename],
@@ -394,7 +411,9 @@ describe('balena push', function() {
 
 		await testPushBuildStream({
 			builderMock: builder,
-			commandLine: `push testApp -s ${projectPath} -R ${regSecretsPath} -l`,
+			commandLine: isV12()
+				? `push testApp -s ${projectPath} -R ${regSecretsPath}`
+				: `push testApp -s ${projectPath} -R ${regSecretsPath} -l`,
 			expectedFiles,
 			expectedQueryParams: commonQueryParams,
 			expectedResponseLines,
@@ -440,7 +459,9 @@ describe('balena push', function() {
 
 		await testPushBuildStream({
 			builderMock: builder,
-			commandLine: `push testApp -s ${projectPath} -R ${regSecretsPath} -l -G`,
+			commandLine: isV12()
+				? `push testApp -s ${projectPath} -R ${regSecretsPath} -G`
+				: `push testApp -s ${projectPath} -R ${regSecretsPath} -l -G`,
 			expectedFiles,
 			expectedQueryParams: commonQueryParams,
 			expectedResponseLines,
