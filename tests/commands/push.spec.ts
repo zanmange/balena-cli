@@ -337,6 +337,7 @@ describe('balena push', function() {
 		});
 	});
 
+	// NOTE: This test fails on some windows machines 'symlink-a.txt' fileSize 13, not 5
 	it('should create the expected tar stream (single container, symbolic links, --nogitignore)', async () => {
 		const projectPath = path.join(
 			projectsPath,
@@ -371,6 +372,7 @@ describe('balena push', function() {
 		});
 	});
 
+	// NOTE: This test fails on some windows machines 'symlink-a.txt' fileSize 13, not 5
 	it('should create the expected tar stream (single container, dockerignore warn)', async () => {
 		const projectPath = path.join(
 			projectsPath,
@@ -384,7 +386,7 @@ describe('balena push', function() {
 			'src/src-b.txt': { fileSize: 5, type: 'file' },
 			'symlink-a.txt': { fileSize: 5, type: 'file' },
 		};
-		if (isWindows) {
+		if (isWindows && !isV12()) {
 			// this test uses the old tarDirectory implementation, which uses
 			// the zeit/dockerignore library that has bugs on Windows
 			expectedFiles['src/src-a.txt'] = { fileSize: 5, type: 'file' };
@@ -395,19 +397,20 @@ describe('balena push', function() {
 			path.join(builderResponsePath, responseFilename),
 			'utf8',
 		);
-		const expectedResponseLines = isWindows
-			? [
-					'[Warn] Using file ignore patterns from:',
-					`[Warn] ${path.join(projectPath, '.dockerignore')}`,
-					'[Warn] Use the --nogitignore (-G) option to suppress this warning and enable the use',
-					'[Warn] of a better dockerignore parser and filter library that fixes several issues',
-					'[Warn] on Windows and improves compatibility with "docker build", but which may also',
-					'[Warn] cause a different set of files to be filtered out (because of the bug fixes).',
-					'[Warn] The --nogitignore option will be the default behavior in an upcoming balena CLI',
-					"[Warn] major version release. For more information, see 'balena help push'.",
-					...commonResponseLines[responseFilename],
-			  ]
-			: commonResponseLines[responseFilename];
+		const expectedResponseLines =
+			isWindows && !isV12()
+				? [
+						'[Warn] Using file ignore patterns from:',
+						`[Warn] ${path.join(projectPath, '.dockerignore')}`,
+						'[Warn] Use the --nogitignore (-G) option to suppress this warning and enable the use',
+						'[Warn] of a better dockerignore parser and filter library that fixes several issues',
+						'[Warn] on Windows and improves compatibility with "docker build", but which may also',
+						'[Warn] cause a different set of files to be filtered out (because of the bug fixes).',
+						'[Warn] The --nogitignore option will be the default behavior in an upcoming balena CLI',
+						"[Warn] major version release. For more information, see 'balena help push'.",
+						...commonResponseLines[responseFilename],
+				  ]
+				: commonResponseLines[responseFilename];
 
 		await testPushBuildStream({
 			builderMock: builder,

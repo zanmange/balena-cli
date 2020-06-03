@@ -57,6 +57,7 @@ describe('compare new and old tarDirectory implementations', function() {
 		await setupDockerignoreTestData({ cleanup: true });
 	});
 
+	// NOTE: This test fails on some windows machines 'symlink-a.txt' fileSize 13, not 5
 	it('should produce the expected file list', async function() {
 		const dockerignoreProjDir = path.join(
 			projectsPath,
