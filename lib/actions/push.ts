@@ -256,6 +256,16 @@ export const push: CommandDefinition<
 				left hand side of the = character will be treated as the variable name.
 			`,
 		},
+		{
+			signature: 'convert-eol',
+			alias: 'l',
+			description: isV12()
+				? 'No-op and deprecated since balena CLI v12.0.0'
+				: stripIndent`
+				On Windows only, convert line endings from CRLF (Windows format) to LF (Unix format).
+				Source files are not modified.`,
+			boolean: true,
+		},
 		...(isV12()
 			? [
 					{
@@ -265,16 +275,7 @@ export const push: CommandDefinition<
 						boolean: true,
 					},
 			  ]
-			: [
-					{
-						signature: 'convert-eol',
-						alias: 'l',
-						description: stripIndent`
-				On Windows only, convert line endings from CRLF (Windows format) to LF (Unix format).
-				Source files are not modified.`,
-						boolean: true,
-					},
-			  ]),
+			: []),
 		{
 			signature: 'nogitignore',
 			alias: 'G',

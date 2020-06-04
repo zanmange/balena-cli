@@ -53,6 +53,7 @@
     "package": "npm run build:fast && npm run build:standalone && npm run build:installer",
     "release": "ts-node --transpile-only automation/run.ts release",
     "pretest": "npm run build",
+    "t": "mocha --timeout 6000 -r ts-node/register/transpile-only \"tests/**/build.spec.ts\"",
     "test": "mocha --timeout 6000 -r ts-node/register/transpile-only \"tests/**/*.spec.ts\"",
     "test:fast": "npm run build:fast && mocha --timeout 6000 -r ts-node/register/transpile-only \"tests/**/*.spec.ts\"",
     "test:only": "npm run build:fast && mocha --timeout 6000 -r ts-node/register/transpile-only \"tests/**/${npm_config_test}.spec.ts\"",

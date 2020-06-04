@@ -84,9 +84,14 @@ describe('balena build', function() {
 
 	it('should create the expected tar stream (single container)', async () => {
 		const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');
+		const isV12W = isWindows && isV12();
 		const expectedFiles: ExpectedTarStreamFiles = {
 			'src/start.sh': { fileSize: 89, type: 'file' },
-			'src/windows-crlf.sh': { fileSize: 70, type: 'file' },
+			'src/windows-crlf.sh': {
+				fileSize: isV12W ? 68 : 70,
+				testStream: isV12W ? expectStreamNoCRLF : undefined,
+				type: 'file',
+			},
 			Dockerfile: { fileSize: 88, type: 'file' },
 			'Dockerfile-alt': { fileSize: 30, type: 'file' },
 		};
@@ -104,15 +109,14 @@ describe('balena build', function() {
 				: '[Build] main Image size: 1.14 MB',
 		];
 		if (isWindows) {
-			expectedResponseLines.push(
-				`[Warn] CRLF (Windows) line endings detected in file: ${path.join(
-					projectPath,
-					'src',
-					'windows-crlf.sh',
-				)}`,
-			);
-			if (!isV12()) {
+			const fname = path.join(projectPath, 'src', 'windows-crlf.sh');
+			if (isV12()) {
 				expectedResponseLines.push(
+					`[Info] Converting line endings CRLF -> LF for file: ${fname}`,
+				);
+			} else {
+				expectedResponseLines.push(
+					`[Warn] CRLF (Windows) line endings detected in file: ${fname}`,
 					'[Warn] Windows-format line endings were detected in some files. Consider using the `--convert-eol` option.',
 				);
 			}
@@ -133,6 +137,7 @@ describe('balena build', function() {
 
 	it('should create the expected tar stream (--emulated)', async () => {
 		const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');
+		const isV12W = isWindows && isV12();
 		const transposedDockerfile =
 			stripIndent`
 			FROM busybox
@@ -142,7 +147,11 @@ describe('balena build', function() {
 			CMD ["/usr/src/start.sh"]` + '\n';
 		const expectedFiles: ExpectedTarStreamFiles = {
 			'src/start.sh': { fileSize: 89, type: 'file' },
-			'src/windows-crlf.sh': { fileSize: 70, type: 'file' },
+			'src/windows-crlf.sh': {
+				fileSize: isV12W ? 68 : 70,
+				testStream: isV12W ? expectStreamNoCRLF : undefined,
+				type: 'file',
+			},
 			Dockerfile: {
 				fileSize: transposedDockerfile.length,
 				type: 'file',
@@ -166,15 +175,14 @@ describe('balena build', function() {
 			'[Success] Build succeeded!',
 		];
 		if (isWindows) {
-			expectedResponseLines.push(
-				`[Warn] CRLF (Windows) line endings detected in file: ${path.join(
-					projectPath,
-					'src',
-					'windows-crlf.sh',
-				)}`,
-			);
-			if (!isV12()) {
+			const fname = path.join(projectPath, 'src', 'windows-crlf.sh');
+			if (isV12()) {
 				expectedResponseLines.push(
+					`[Info] Converting line endings CRLF -> LF for file: ${fname}`,
+				);
+			} else {
+				expectedResponseLines.push(
+					`[Warn] CRLF (Windows) line endings detected in file: ${fname}`,
 					'[Warn] Windows-format line endings were detected in some files. Consider using the `--convert-eol` option.',
 				);
 			}
@@ -215,60 +223,60 @@ describe('balena build', function() {
 		}
 	});
 
-	it(
-		isV12()
-			? 'should create the expected tar stream (single container)'
-			: 'should create the expected tar stream (single container, --convert-eol)',
-		async () => {
-			const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');
-			const expectedFiles: ExpectedTarStreamFiles = {
-				'src/start.sh': { fileSize: 89, type: 'file' },
-				'src/windows-crlf.sh': {
-					fileSize: isWindows ? 68 : 70,
-					testStream: isWindows ? expectStreamNoCRLF : undefined,
-					type: 'file',
-				},
-				Dockerfile: { fileSize: 88, type: 'file' },
-				'Dockerfile-alt': { fileSize: 30, type: 'file' },
-			};
-			const responseFilename = 'build-POST.json';
-			const responseBody = await fs.readFile(
-				path.join(dockerResponsePath, responseFilename),
-				'utf8',
-			);
-			const expectedResponseLines = [
-				...commonResponseLines[responseFilename],
-				`[Info] No "docker-compose.yml" file found at "${projectPath}"`,
-				`[Info] Creating default composition with source: "${projectPath}"`,
-				isV12()
-					? '[Build] main Step 1/4 : FROM busybox'
-					: '[Build] main Image size: 1.14 MB',
-			];
-			if (isWindows) {
+	it('should create the expected tar stream (single container, --[no]convert-eol)', async () => {
+		const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');
+		const eol = isWindows && !isV12();
+		const expectedFiles: ExpectedTarStreamFiles = {
+			'src/start.sh': { fileSize: 89, type: 'file' },
+			'src/windows-crlf.sh': {
+				fileSize: eol ? 68 : 70,
+				testStream: eol ? expectStreamNoCRLF : undefined,
+				type: 'file',
+			},
+			Dockerfile: { fileSize: 88, type: 'file' },
+			'Dockerfile-alt': { fileSize: 30, type: 'file' },
+		};
+		const responseFilename = 'build-POST.json';
+		const responseBody = await fs.readFile(
+			path.join(dockerResponsePath, responseFilename),
+			'utf8',
+		);
+		const expectedResponseLines = [
+			...commonResponseLines[responseFilename],
+			`[Info] No "docker-compose.yml" file found at "${projectPath}"`,
+			`[Info] Creating default composition with source: "${projectPath}"`,
+			isV12()
+				? '[Build] main Step 1/4 : FROM busybox'
+				: '[Build] main Image size: 1.14 MB',
+		];
+		if (isWindows) {
+			const fname = path.join(projectPath, 'src', 'windows-crlf.sh');
+			if (isV12()) {
 				expectedResponseLines.push(
-					`[Info] Converting line endings CRLF -> LF for file: ${path.join(
-						projectPath,
-						'src',
-						'windows-crlf.sh',
-					)}`,
+					`[Warn] CRLF (Windows) line endings detected in file: ${fname}`,
+					'[Warn] Windows-format line endings were detected in some files, but were not converted due to `--noconvert-eol` option.',
+				);
+			} else {
+				expectedResponseLines.push(
+					`[Info] Converting line endings CRLF -> LF for file: ${fname}`,
 				);
 			}
-			docker.expectGetInfo({});
-			await testDockerBuildStream({
-				commandLine: isV12()
-					? `build ${projectPath} --deviceType nuc --arch amd64`
-					: `build ${projectPath} --deviceType nuc --arch amd64 --convert-eol`,
-				dockerMock: docker,
-				expectedFilesByService: { main: expectedFiles },
-				expectedQueryParamsByService: { main: commonQueryParams },
-				expectedResponseLines,
-				projectPath,
-				responseBody,
-				responseCode: 200,
-				services: ['main'],
-			});
-		},
-	);
+		}
+		docker.expectGetInfo({});
+		await testDockerBuildStream({
+			commandLine: isV12()
+				? `build ${projectPath} --deviceType nuc --arch amd64 --noconvert-eol`
+				: `build ${projectPath} --deviceType nuc --arch amd64 --convert-eol`,
+			dockerMock: docker,
+			expectedFilesByService: { main: expectedFiles },
+			expectedQueryParamsByService: { main: commonQueryParams },
+			expectedResponseLines,
+			projectPath,
+			responseBody,
+			responseCode: 200,
+			services: ['main'],
+		});
+	});
 
 	it('should create the expected tar stream (docker-compose)', async () => {
 		const projectPath = path.join(projectsPath, 'docker-compose', 'basic');
@@ -336,9 +344,7 @@ describe('balena build', function() {
 		}
 		docker.expectGetInfo({});
 		await testDockerBuildStream({
-			commandLine: isV12()
-				? `build ${projectPath} --deviceType nuc --arch amd64 -G`
-				: `build ${projectPath} --deviceType nuc --arch amd64 --convert-eol -G`,
+			commandLine: `build ${projectPath} --deviceType nuc --arch amd64 --convert-eol -G`,
 			dockerMock: docker,
 			expectedFilesByService,
 			expectedQueryParamsByService,
