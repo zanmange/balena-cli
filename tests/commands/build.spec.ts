@@ -62,6 +62,9 @@ const commonComposeQueryParams = [
 	['labels', ''],
 ];
 
+const itSkipMocked =
+	process.env.BALENA_CLI_TEST_TYPE === 'standalone' ? it.skip : it;
+
 describe('balena build', function() {
 	let api: BalenaAPIMock;
 	let docker: DockerMock;
@@ -135,93 +138,96 @@ describe('balena build', function() {
 		});
 	});
 
-	it('should create the expected tar stream (--emulated)', async () => {
-		const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');
-		const isV12W = isWindows && isV12();
-		const transposedDockerfile =
-			stripIndent`
+	itSkipMocked(
+		'should create the expected tar stream (--emulated)',
+		async () => {
+			const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');
+			const isV12W = isWindows && isV12();
+			const transposedDockerfile =
+				stripIndent`
 			FROM busybox
 			COPY [".balena/qemu-execve","/tmp/qemu-execve"]
 			COPY ["./src","/usr/src/"]
 			RUN ["/tmp/qemu-execve","-execve","/bin/sh","-c","chmod a+x /usr/src/*.sh"]
 			CMD ["/usr/src/start.sh"]` + '\n';
-		const expectedFiles: ExpectedTarStreamFiles = {
-			'src/start.sh': { fileSize: 89, type: 'file' },
-			'src/windows-crlf.sh': {
-				fileSize: isV12W ? 68 : 70,
-				testStream: isV12W ? expectStreamNoCRLF : undefined,
-				type: 'file',
-			},
-			Dockerfile: {
-				fileSize: transposedDockerfile.length,
-				type: 'file',
-				contents: transposedDockerfile,
-			},
-			'Dockerfile-alt': { fileSize: 30, type: 'file' },
-		};
-		const responseFilename = 'build-POST.json';
-		const responseBody = await fs.readFile(
-			path.join(dockerResponsePath, responseFilename),
-			'utf8',
-		);
-		const expectedResponseLines = [
-			`[Info] No "docker-compose.yml" file found at "${projectPath}"`,
-			`[Info] Creating default composition with source: "${projectPath}"`,
-			'[Info] Building for rpi/raspberry-pi',
-			'[Info] Emulation is enabled',
-			isV12()
-				? '[Build] main Step 1/4 : FROM busybox'
-				: '[Build] main Image size: 1.14 MB',
-			'[Success] Build succeeded!',
-		];
-		if (isWindows) {
-			const fname = path.join(projectPath, 'src', 'windows-crlf.sh');
-			if (isV12()) {
-				expectedResponseLines.push(
-					`[Info] Converting line endings CRLF -> LF for file: ${fname}`,
-				);
-			} else {
-				expectedResponseLines.push(
-					`[Warn] CRLF (Windows) line endings detected in file: ${fname}`,
-					'[Warn] Windows-format line endings were detected in some files. Consider using the `--convert-eol` option.',
-				);
+			const expectedFiles: ExpectedTarStreamFiles = {
+				'src/start.sh': { fileSize: 89, type: 'file' },
+				'src/windows-crlf.sh': {
+					fileSize: isV12W ? 68 : 70,
+					testStream: isV12W ? expectStreamNoCRLF : undefined,
+					type: 'file',
+				},
+				Dockerfile: {
+					fileSize: transposedDockerfile.length,
+					type: 'file',
+					contents: transposedDockerfile,
+				},
+				'Dockerfile-alt': { fileSize: 30, type: 'file' },
+			};
+			const responseFilename = 'build-POST.json';
+			const responseBody = await fs.readFile(
+				path.join(dockerResponsePath, responseFilename),
+				'utf8',
+			);
+			const expectedResponseLines = [
+				`[Info] No "docker-compose.yml" file found at "${projectPath}"`,
+				`[Info] Creating default composition with source: "${projectPath}"`,
+				'[Info] Building for rpi/raspberry-pi',
+				'[Info] Emulation is enabled',
+				isV12()
+					? '[Build] main Step 1/4 : FROM busybox'
+					: '[Build] main Image size: 1.14 MB',
+				'[Success] Build succeeded!',
+			];
+			if (isWindows) {
+				const fname = path.join(projectPath, 'src', 'windows-crlf.sh');
+				if (isV12()) {
+					expectedResponseLines.push(
+						`[Info] Converting line endings CRLF -> LF for file: ${fname}`,
+					);
+				} else {
+					expectedResponseLines.push(
+						`[Warn] CRLF (Windows) line endings detected in file: ${fname}`,
+						'[Warn] Windows-format line endings were detected in some files. Consider using the `--convert-eol` option.',
+					);
+				}
 			}
-		}
-		const arch = 'rpi';
-		const deviceType = 'raspberry-pi';
-		const fsModPath = 'mz/fs';
-		const fsMod = await import(fsModPath);
-		const qemuModPath = '../../build/utils/qemu';
-		const qemuMod = require(qemuModPath);
-		const qemuBinPath = await qemuMod.getQemuPath(arch);
-		try {
-			mock(fsModPath, {
-				...fsMod,
-				exists: async (p: string) =>
-					p === qemuBinPath ? true : fsMod.exists(p),
-			});
-			mock(qemuModPath, {
-				...qemuMod,
-				copyQemu: async () => '',
-			});
-			mock.reRequire('../../build/utils/qemu');
-			docker.expectGetInfo({ OperatingSystem: 'balenaOS 2.44.0+rev1' });
-			await testDockerBuildStream({
-				commandLine: `build ${projectPath} --emulated --deviceType ${deviceType} --arch ${arch} --nogitignore`,
-				dockerMock: docker,
-				expectedFilesByService: { main: expectedFiles },
-				expectedQueryParamsByService: { main: commonQueryParams },
-				expectedResponseLines,
-				projectPath,
-				responseBody,
-				responseCode: 200,
-				services: ['main'],
-			});
-		} finally {
-			mock.stop(fsModPath);
-			mock.stop(qemuModPath);
-		}
-	});
+			const arch = 'rpi';
+			const deviceType = 'raspberry-pi';
+			const fsModPath = 'mz/fs';
+			const fsMod = await import(fsModPath);
+			const qemuModPath = '../../build/utils/qemu';
+			const qemuMod = require(qemuModPath);
+			const qemuBinPath = await qemuMod.getQemuPath(arch);
+			try {
+				mock(fsModPath, {
+					...fsMod,
+					exists: async (p: string) =>
+						p === qemuBinPath ? true : fsMod.exists(p),
+				});
+				mock(qemuModPath, {
+					...qemuMod,
+					copyQemu: async () => '',
+				});
+				mock.reRequire('../../build/utils/qemu');
+				docker.expectGetInfo({ OperatingSystem: 'balenaOS 2.44.0+rev1' });
+				await testDockerBuildStream({
+					commandLine: `build ${projectPath} --emulated --deviceType ${deviceType} --arch ${arch} --nogitignore`,
+					dockerMock: docker,
+					expectedFilesByService: { main: expectedFiles },
+					expectedQueryParamsByService: { main: commonQueryParams },
+					expectedResponseLines,
+					projectPath,
+					responseBody,
+					responseCode: 200,
+					services: ['main'],
+				});
+			} finally {
+				mock.stop(fsModPath);
+				mock.stop(qemuModPath);
+			}
+		},
+	);
 
 	it('should create the expected tar stream (single container, --[no]convert-eol)', async () => {
 		const projectPath = path.join(projectsPath, 'no-docker-compose', 'basic');

@@ -135,10 +135,14 @@ export class NockMock {
 	protected handleUnexpectedRequest(req: any) {
 		const o = req.options || {};
 		const u = o.uri || {};
+		const method = req.method;
+		const proto = req.protocol || req.proto || o.proto || u.protocol;
+		const host = req.host || req.headers?.host || o.host || u.host;
+		const path = req.path || o.path || u.path;
 		console.error(
-			`Unexpected http request!: ${req.method} ${o.proto ||
-				u.protocol}//${o.host || u.host}${req.path || o.path || u.path}`,
+			`Unexpected http request!: ${method} ${proto}//${host}${path}`,
 		);
+		console.error(`req: ${require('util').inspect(req)}`);
 		// Errors thrown here are not causing the tests to fail for some reason.
 		// Possibly due to CLI global error handlers? (error.js)
 		// (Also, nock should automatically throw an error, but also not happening)
