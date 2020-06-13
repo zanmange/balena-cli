@@ -1,4 +1,59 @@
 - commits:
+    - subject: tmp
+      hash: b59cbc3ba6f4d8dce58638a041d0652741b385ab
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Add tests for standalone executable via local proxy server
+      hash: aca72a68f3fabca0729f55e75360ff09808678c2
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Update 'balena-sdk' from v12 to v13 and update code and tests as needed
+      hash: 5fd1ed307022cde80d1b570a2e296e8b6cd80f5c
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Update 'pkg' dependency (improve support for Node v14)
+      hash: 7ed7743f0c797f8cb43e70cf7e1c210289ad65eb
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: >-
+        Update 'net-keepalive' (fix Node v14 crash with 'balena push' to local
+        device)
+      hash: 3f7f69e8672a3536cd86b8b342dde4ba64356933
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Turn v12 feature switch on
+      hash: 34f88939b9d685ab3e35704265e39f8098be8fd1
+      body: |
+        See https://github.com/balena-io/balena-cli/issues/1770
+      footer:
+        Change-type: major
+        change-type: major
+      author: Paulo Castro
+    - subject: Update minimum Node.js requirement from v8 to v10
+      hash: 481e84d00cdac0210bcc4a86b64bdb2e726ab4e8
+      body: ''
+      footer:
+        Change-type: major
+        change-type: major
+      author: Paulo Castro
+  version: 12.0.0
+  date: 2020-06-13T21:39:02.749Z
+- commits:
     - subject: 'v12 preparations: Add feature switch for default eol-converson'
       hash: 1569915fae760eb68da00dfa18f48479d5340a96
       body: ''
