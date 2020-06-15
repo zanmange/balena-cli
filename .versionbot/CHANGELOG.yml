@@ -1,4 +1,30 @@
 - commits:
+    - subject: Convert 'logs' command to async/await and add tests
+      hash: e1a8f7d89fdc95589ff58739291f515f27141c3d
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Add tests for standalone executable via proxy server
+      hash: 1c0381e8e2d6d36e0ca90369cf3f1351742c7cd3
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: >-
+        Update 'global-agent' (fix proxy server issues with unauthenticated
+        setup)
+      hash: 2ce758e151b2f79962882533190cb329b8d3d923
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+  version: 11.36.1
+  date: 2020-06-15T14:40:27.568Z
+- commits:
     - subject: 'balena device: Add the mac_address field'
       hash: 41e5fdbe27f262354b43efd8dbd2ed3d52a74264
       body: ''
