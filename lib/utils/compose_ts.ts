@@ -57,6 +57,9 @@ const exists = async (filename: string) => {
 
 const compositionFileNames = ['docker-compose.yml', 'docker-compose.yaml'];
 
+const hr =
+	'----------------------------------------------------------------------';
+
 /**
  * high-level function resolving a project and creating a composition out
  * of it in one go. if image is given, it'll create a default project for
@@ -174,6 +177,67 @@ async function loadBuildMetatada(
 	return [buildMetadata, metadataPath];
 }
 
+class MockLogger extends Logger {
+	public getLogger() {
+		return new MockLogger();
+	}
+	public logDebug(_msg: string) {
+		return true;
+	}
+	public logInfo(_msg: string) {
+		return true;
+	}
+}
+
+async function getServiceDirsFromComposition(
+	sourceDir: string,
+	composition?: Composition,
+): Promise<Dictionary<string>> {
+	const { createProject } = await import('./compose');
+	const relPrefix = '.' + path.sep;
+	const serviceDirs: Dictionary<string> = {};
+	if (!composition) {
+		const [, composeStr] = await resolveProject(
+			MockLogger.getLogger(),
+			sourceDir,
+		);
+		if (composeStr) {
+			composition = createProject(sourceDir, composeStr).composition;
+		}
+	}
+	if (composition?.services) {
+		for (const [serviceName, service] of Object.entries(composition.services)) {
+			let dir =
+				typeof service.build === 'string'
+					? service.build
+					: service.build?.context || '.';
+			// Convert forward slashes to backslashes on Windows
+			dir = path.normalize(dir);
+			// Make sure the path is relative to the project directory
+			if (path.isAbsolute(dir)) {
+				dir = path.relative(sourceDir, dir);
+			}
+			// remove a trailing '/' (or backslash on Windows)
+			dir = dir.endsWith(path.sep) ? dir.slice(0, -1) : dir;
+			// remove './' prefix (or '.\\' on Windows)
+			dir = dir.startsWith(relPrefix) ? dir.slice(2) : dir;
+			// filter out a '.' service directory (e.g. for the 'main' service
+			// of a single-container application)
+			if (dir && dir !== '.') {
+				serviceDirs[serviceName] = dir;
+			}
+		}
+	}
+	// console.error(
+	// 	`getServiceDirsFromComposition serviceDirs=${JSON.stringify(
+	// 		serviceDirs,
+	// 		null,
+	// 		4,
+	// 	)}`,
+	// );
+	return serviceDirs;
+}
+
 /**
  * Create a tar stream out of the local filesystem at the given directory,
  * while optionally applying file filters such as '.dockerignore' and
@@ -185,14 +249,20 @@ async function loadBuildMetatada(
 export async function tarDirectory(
 	dir: string,
 	{
-		preFinalizeCallback,
+		composition,
 		convertEol = false,
+		multiDockerignore = false,
 		nogitignore = false,
+		preFinalizeCallback,
 	}: TarDirectoryOptions,
 ): Promise<import('stream').Readable> {
 	(await import('assert')).strict.strictEqual(nogitignore, true);
 	const { filterFilesWithDockerignore } = await import('./ignore');
 	const { toPosixPath } = (await import('resin-multibuild')).PathUtils;
+
+	const serviceDirs = multiDockerignore
+		? await getServiceDirsFromComposition(dir, composition)
+		: {};
 
 	let readFile: (file: string) => Promise<Buffer>;
 	if (process.platform === 'win32') {
@@ -205,8 +275,8 @@ export async function tarDirectory(
 	const {
 		filteredFileList,
 		dockerignoreFiles,
-	} = await filterFilesWithDockerignore(dir);
-	printDockerignoreWarn(dockerignoreFiles);
+	} = await filterFilesWithDockerignore(dir, serviceDirs);
+	printDockerignoreWarn(dockerignoreFiles, serviceDirs, multiDockerignore);
 	for (const fileStats of filteredFileList) {
 		pack.entry(
 			{
@@ -227,33 +297,83 @@ export async function tarDirectory(
 
 export function printDockerignoreWarn(
 	dockerignoreFiles: Array<import('./ignore').FileStats>,
+	serviceDirsByService: Dictionary<string>,
+	multiDockerignore: boolean,
 ) {
-	const nonRootFiles = dockerignoreFiles.filter(
-		(fileStats: import('./ignore').FileStats) => {
-			const dirname = path.dirname(fileStats.relPath);
-			return !!dirname && dirname !== '.';
+	let rootDockerignore: import('./ignore').FileStats | undefined;
+	const logger = Logger.getLogger();
+	const relPrefix = '.' + path.sep;
+	// add trailing '/' (or '\\' on Windows) to service directories
+	const serviceDirs = Object.values(serviceDirsByService || {});
+	// .map(dir => dir.endsWith(path.sep) ? dir : (dir || '.') + path.sep);
+
+	const unusedFiles = dockerignoreFiles.filter(
+		(dockerignoreStats: import('./ignore').FileStats) => {
+			let dirname = path.dirname(dockerignoreStats.relPath);
+			dirname = dirname.startsWith(relPrefix) ? dirname.slice(2) : dirname;
+			const isProjectRootDir = !dirname || dirname === '.';
+			if (isProjectRootDir) {
+				rootDockerignore = dockerignoreStats;
+				// the root .dockerignore file is always considered
+				return false;
+			}
+			if (multiDockerignore) {
+				for (const serviceDir of serviceDirs) {
+					if (serviceDir === dirname) {
+						return false;
+					}
+				}
+			}
+			return true;
 		},
 	);
-	if (nonRootFiles.length === 0) {
-		return;
+	const msg: string[] = [];
+	let logFunc = logger.logWarn;
+	// Warn about unused .dockerignore files
+	if (unusedFiles.length) {
+		msg.push(
+			'The following .dockerignore file(s) will not be used:',
+			...unusedFiles.map((fileStats) => `* ${fileStats.filePath}`),
+		);
+		if (multiDockerignore) {
+			msg.push(stripIndent`
+				When --multi-dockerignore (-m) is used, only .dockerignore files at the root of
+				each service's build context (in a microservices/multicontainer application),
+				plus a .dockerignore file at the overall project root, are used.
+				See "balena help ${Logger.command}" for more details.`);
+		} else {
+			msg.push(stripIndent`
+				By default, only one .dockerignore file at the source folder (project root)
+				is used. Microservices (multicontainer) applications may use a separate
+				.dockerignore file for each service with the --multi-dockerignore (-m) option.
+				See "balena help ${Logger.command}" for more details.`);
+		}
 	}
-	const hr =
-		'-------------------------------------------------------------------------------';
-	const msg = [
-		' ',
-		hr,
-		'The following .dockerignore file(s) will not be used:',
-	];
-	msg.push(...nonRootFiles.map((fileStats) => `* ${fileStats.filePath}`));
-	msg.push(stripIndent`
-		Only one .dockerignore file at the source folder (project root) is used.
-		Additional .dockerignore files are disregarded. Microservices (multicontainer)
-		apps should place the .dockerignore file alongside the docker-compose.yml file.
-		See issue: https://github.com/balena-io/balena-cli/issues/1870
-		See also CLI v12 release notes: https://git.io/Jf7hz
-	`);
-	msg.push(hr);
-	Logger.getLogger().logWarn(msg.join('\n'));
+	// No unused .dockerignore files. Print info-level advice in some cases.
+	else if (multiDockerignore) {
+		logFunc = logger.logInfo;
+		// multi-container app with a root .dockerignore file
+		if (serviceDirs.length && rootDockerignore) {
+			msg.push(
+				stripIndent`
+				The --multi-dockerignore option is being used, and a .dockerignore file was
+				found at the project source (root) directory. Note that this file will not
+				be used to filter service subdirectories. See "balena help ${Logger.command}".`,
+			);
+		}
+		// single-container app
+		else if (serviceDirs.length === 0) {
+			msg.push(
+				stripIndent`
+				The --multi-dockerignore (-m) option was specified, but it has no effect for
+				single-container (non-microservices) apps. Only one .dockerignore file at the
+				project source (root) directory, if any, is used. See "balena help ${Logger.command}".`,
+			);
+		}
+	}
+	if (msg.length) {
+		logFunc.call(logger, [' ', hr, ...msg, hr].join('\n'));
+	}
 }
 
 /**
@@ -270,8 +390,6 @@ export function printGitignoreWarn(
 	if (ignoreFiles.length === 0) {
 		return;
 	}
-	const hr =
-		'-------------------------------------------------------------------------------';
 	const msg = [' ', hr, 'Using file ignore patterns from:'];
 	msg.push(...ignoreFiles.map((e) => `* ${e}`));
 	if (gitignoreFiles.length) {

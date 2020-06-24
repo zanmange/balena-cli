@@ -69,33 +69,49 @@ this file will be used instead.`;
 
 export const dockerignoreHelp = `\
 DOCKERIGNORE AND GITIGNORE FILES
-The balena CLI will use a '.dockerignore' file (if any) at the source directory
-in order to decide which source files to exclude from the "build context" sent
-to balenaCloud, Docker or balenaEngine. In a microservices / multicontainer
-application, the source directory is usually where the 'docker-compose.yml'
-file is located, and therefore the '.dockerignore' file should be located
-alongside the 'docker-compose.yml' file. Matching patterns may be prefixed with
-the service's directory name (relative to the source directory) in order to
-apply to that service only (e.g. 'service1/node_modules').
+By default, the balena CLI will use a single ".dockerignore" file (if any) at
+the project root (source directory) in order to decide which source files to
+exclude from the "build context" sent to balenaCloud, Docker daemon or
+balenaEngine. In a microservices (multicontainer) application, the source
+directory is the directory that contains the "docker-compose.yml" file.
 
-Previous balena CLI releases (before v12.0.0) also took '.gitignore' files
-into account. This behavior is deprecated, but may still be enabled with the
---gitignore (-g) option if compatibility is required. This option will be
-removed in the CLI's next major version release (v13).
+The --multi-dockerignore (-m) option may be used with microservices (multicontainer)
+applications that define a "docker-compose.yml" file. When this option is used,
+each service subdirectory (defined by the 'build' or 'build.context' service
+properties in the docker-compose.yml file) will be filtered separately according
+the .dockerignore file (if any) defined at the service subdirectory. If no
+.dockerignore file exists at the service subdirectory, then only the default
+.dockerignore patterns (see below) will apply for that service subdirectory.
 
+When the --multi-dockerignore (-m) option is used, the .dockerignore file (if
+any) defined at the overall project root will not have any effect on service
+subdirectories, whether or not a service subdirectory defines its own
+.dockerignore file. Multiple .dockerignore files are not "merged" or "added
+together" and cannot override or extend other files. This behavior maximises
+compatibility with the standard docker-compose tool, while still allowing a
+root .dockerignore file (at the overall project root) to filter files and
+folders that are outside service subdirectories.
+
+Balena CLI releases older than v12.0.0 also took '.gitignore' files into account.
+This behavior is deprecated, but may still be enabled with the --gitignore (-g)
+option if compatibility is required. This option is mutually exclusive with
+--multi-dockerignore (-m) and will be removed in the CLI's next major version
+release (v13).
+
+Default .dockerignore patterns
 When --gitignore (-g) is NOT provided (i.e. when not in v11 compatibility mode),
-a few "hardcoded" dockerignore patterns are also used and "merged" (in memory)
-with the patterns found in the '.dockerignore' file (if any), in the following
-order:
-
+a few hardcoded dockerignore patterns are also used and "merged" (in memory)
+with the patterns found in the applicable '.dockerignore' file (if any), in
+the following order:
+\`\`\`
     **/.git
-    < user's patterns from the '.dockerignore' file, if any >
+    < user's patterns from the applicable '.dockerignore' file, if any >
     !**/.balena
     !**/.resin
     !**/Dockerfile
     !**/Dockerfile.*
     !**/docker-compose.yml
-
+\`\`\`
 If necessary, the effect of the '**/.git' pattern may be modified by adding
 "counter patterns" to the '.dockerignore' file, for example '!service1/.git'.
 For documentation on pattern format, see:

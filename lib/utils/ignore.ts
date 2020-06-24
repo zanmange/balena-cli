@@ -248,18 +248,11 @@ async function readDockerIgnoreFile(projectDir: string): Promise<string> {
 	return dockerIgnoreStr;
 }
 
-/**
- * Create a list of files (FileStats[]) for the filesystem subtree rooted at
- * projectDir, filtered against a .dockerignore file (if any) also at projectDir,
- * plus a few hardcoded dockerignore patterns.
- * @param projectDir Source directory to
- */
-export async function filterFilesWithDockerignore(
-	projectDir: string,
-): Promise<{ filteredFileList: FileStats[]; dockerignoreFiles: FileStats[] }> {
-	// path.resolve() also converts forward slashes to backslashes on Windows
-	projectDir = path.resolve(projectDir);
-	const dockerIgnoreStr = await readDockerIgnoreFile(projectDir);
+async function getDockerIgnoreInstance(
+	directory: string,
+	isService = false,
+): Promise<import('@balena/dockerignore').Ignore> {
+	const dockerIgnoreStr = await readDockerIgnoreFile(directory);
 	const $dockerIgnore = (await import('@balena/dockerignore')).default;
 	const ig = $dockerIgnore({ ignorecase: false });
 
@@ -267,13 +260,99 @@ export async function filterFilesWithDockerignore(
 	if (dockerIgnoreStr) {
 		ig.add(dockerIgnoreStr);
 	}
-	ig.add([
-		'!**/.balena',
-		'!**/.resin',
-		'!**/Dockerfile',
-		'!**/Dockerfile.*',
-		'!**/docker-compose.yml',
-	]);
+	ig.add(['!**/.balena', '!**/.resin', '!**/Dockerfile', '!**/Dockerfile.*']);
+	if (!isService) {
+		ig.add(['!**/docker-compose.yml']);
+	}
+	return ig;
+}
+
+// export interface ServiceDir {
+// 	service: string;
+// 	serviceDir: string;
+// }
+
+export interface ServiceDirs {
+	[service: string]: string;
+}
+
+/**
+ * Create a list of files (FileStats[]) for the filesystem subtree rooted at
+ * projectDir, filtered against a .dockerignore file (if any) also at projectDir,
+ * plus a few hardcoded dockerignore patterns.
+ * @param projectDir Source directory to
+ * @param serviceDirs Map of service names to their project subdirectories (optional).
+ * The serviceDirs directory names/paths must be relative to the project root dir
+ * and be "normalized" before the call to this function: they should use backslashes
+ * on Windows, not contain '.' or '..' segments and not contain multiple consecutive
+ * path separators like '//'. Relative paths must not start with './'.
+ */
+export async function filterFilesWithDockerignore(
+	projectDir: string,
+	// multiDockerignore: boolean,
+	serviceDirs?: ServiceDirs,
+): Promise<{ filteredFileList: FileStats[]; dockerignoreFiles: FileStats[] }> {
+	// path.resolve() also converts forward slashes to backslashes on Windows
+	projectDir = path.resolve(projectDir);
+	// const dockerIgnoreStr = await readDockerIgnoreFile(projectDir);
+	// const $dockerIgnore = (await import('@balena/dockerignore')).default;
+	// const ig = $dockerIgnore({ ignorecase: false });
+
+	// ig.add(['**/.git']);
+	// if (dockerIgnoreStr) {
+	// 	ig.add(dockerIgnoreStr);
+	// }
+	// ig.add([
+	// 	'!**/.balena',
+	// 	'!**/.resin',
+	// 	'!**/Dockerfile',
+	// 	'!**/Dockerfile.*',
+	// 	'!**/docker-compose.yml',
+	// ]);
+
+	// const rootIgnore = await getDockerIgnoreInstance(projectDir);
+	// const serviceIgnore: { [service: string]: import('@balena/dockerignore').Ignore } = {};
+
+	// let dirs: string[] = [];
+
+	// ignoreByDir stores an instance of the dockerignore filter for each service dir
+	const ignoreByDir: {
+		[serviceDir: string]: import('@balena/dockerignore').Ignore;
+	} = {
+		'.': await getDockerIgnoreInstance(projectDir),
+	};
+
+	// for (const [_service, serviceDir] of Object.entries(serviceDirs || {})) {
+	// 	serviceIgnore[service] = await getDockerIgnoreInstance(
+	// 		path.join(projectDir, serviceDir),
+	// 		true,
+	// 	);
+	// }
+
+	// const relPrefix = '.' + path.sep;
+	const dirs = Object.values(serviceDirs || {}).map((dir) =>
+		dir.endsWith(path.sep) ? dir : (dir || '.') + path.sep,
+	);
+	// .map((d) => {
+	// 	// remove './' prefix and add '/' suffix (or the backslash on Windows)
+	// 	d = d.startsWith(relPrefix) ? d.substring(2) : d;
+	// 	d = d.endsWith(path.sep) ? d : d + path.sep;
+	// 	return d;
+	// })
+	// // filter out a './' service directory (e.g. for the 'main' service of a
+	// // single-container application)
+	// .filter((d) => d !== relPrefix);
+
+	for (const dir of dirs) {
+		ignoreByDir[dir] = await getDockerIgnoreInstance(
+			path.join(projectDir, dir),
+			true,
+		);
+	}
+	// }
+	// if (!ignoreByDir['.']) {
+	// 	ignoreByDir['.'] = await getDockerIgnoreInstance(projectDir);
+	// }
 
 	const files = await listFiles(projectDir);
 	const dockerignoreFiles: FileStats[] = [];
@@ -281,7 +360,16 @@ export async function filterFilesWithDockerignore(
 		if (path.basename(file.relPath) === '.dockerignore') {
 			dockerignoreFiles.push(file);
 		}
-		return !ig.ignores(file.relPath);
+
+		// if (multiDockerignore) {
+		for (const dir of dirs) {
+			if (file.relPath.startsWith(dir)) {
+				return !ignoreByDir[dir].ignores(file.relPath.substring(dir.length));
+			}
+		}
+		// }
+
+		return !ignoreByDir['.'].ignores(file.relPath);
 	});
 	return { filteredFileList, dockerignoreFiles };
 }
