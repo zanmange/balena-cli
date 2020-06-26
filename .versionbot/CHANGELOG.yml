@@ -1,4 +1,15 @@
 - commits:
+    - subject: Generate an oclif.manifest.json before publishing
+      hash: 7a1bd433bd05fd09101804d0a887b82c9be98207
+      body: |
+        This saves ~220ms for me when running oclif commands
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Pagan Gazzard
+  version: 12.1.17
+  date: 2020-06-26T15:10:21.561Z
+- commits:
     - subject: Recategorize some errors as expected.
       hash: 1308b64c67f4b0f8d665e086971ed1e7549e22d8
       body: ''
